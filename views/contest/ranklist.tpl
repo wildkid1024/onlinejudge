@@ -78,18 +78,4 @@
 
     </div>
 </div>
-
-{{/*<script src="Ranklist_files/jquery_002.js"></script>*/}}
-{{/*<script src="Ranklist_files/jquery.js"></script>*/}}
-{{/*<script src="/static/js/xlsx.js"></script>*/}}
-{{/*<script src="Ranklist_files/Blob.js"></script>*/}}
-{{/*<script src="Ranklist_files/FileSaver.js"></script>*/}}
-{{/*<script src="Ranklist_files/tableexport.js"></script>*/}}
-{{/*<script src="Ranklist_files/ranklist_redesign.js"></script>*/}}
-{{/*<script src="Ranklist_files/ranklist.html"></script>*/}}
-
-<script>
-    initContest();
-</script>
-
 </div>

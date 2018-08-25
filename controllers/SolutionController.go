@@ -93,14 +93,11 @@ func (c *SolutionController) APIGet() {
 		c.Abort("404")
 	}
 	solution.GetFirst()
-	//var json  models.APISolution
 	json := models.APISolution{
 		Sid:solution.Sid,
 		Pid:solution.Pid,
 		ProgramLanguage:solution.ProgramLanguage,
 		Code:solution.Code,
-		//TimeLimit:solution.Problem.TimeLimit,
-		//MemoryLimit:solution.Problem.MemoryLimit,
 	}
 	if solution.Problem != nil{
 		json.MemoryLimit = solution.Problem.MemoryLimit
@@ -110,7 +107,6 @@ func (c *SolutionController) APIGet() {
 	s := models.Solution{Sid:solution.Sid}
 	s.Result = 10;
 	s.Update("Result")
-	//fmt.Println(s)
 	c.Data["title"] = "API"
 	c.ServeJSON()
 }
