@@ -24,6 +24,7 @@ func (solution *Solution) GetRecent() ([]Solution, int64) {
 		qs = qs.Filter("User__Nickname__icontains", solution.User.Nickname)
 	}
 	count, err := qs.OrderBy("-DateCreated").RelatedSel().All(&solutions)
+
 	if nil == err {
 		return solutions, count
 	}
@@ -87,7 +88,7 @@ func (solution *Solution) ContestUsers() ([]Solution, int64) {
 	var solutions []Solution
 	qs := o.QueryTable("solution")
 	qs = qs.Filter("Cid", solution.Cid)
-	count, err := qs.GroupBy("Uid").All(&solutions)
+	count, err := qs.GroupBy("Uid").RelatedSel().All(&solutions,"Uid","User")
 	if err == nil {
 		return solutions, count
 	}

@@ -158,7 +158,7 @@ func (c *ContestController) ContestProblem() {
 	c.LayoutSections["js"] = "contest/js.tpl"
 }
 
-//bugs ：需要检测题目是否在problems中
+//需要检测题目是否在problems中
 func (c *ContestController) ContestSubmit() {
 	pid, _ := c.GetInt(":pid")
 	cid, _ := c.GetInt(":cid")
@@ -182,11 +182,12 @@ func (c *ContestController) ContestSubmit() {
 		solution := models.Solution{
 			ProgramLanguage: c.GetString("lang"),
 			Code:            code,
-			//Pid:             pid,
-			//Uid:             uid,
-			Cid:     cid,
-			User:    &user,
-			Problem: &problem,
+			Pid:             pid,
+			Uid:             uid,
+			Cid:             cid,
+			User:            &user,
+			Problem:         &problem,
+			Result:          10,
 		}
 		if _, ok := solution.Create(); ok {
 			c.Redirect("/contest/"+strconv.Itoa(cid)+"/status", 302)
@@ -218,8 +219,8 @@ func (c *ContestController) ContestStatus() {
 	c.TplName = "solution/solutions.tpl"
 	c.LayoutSections = make(map[string]string)
 	c.LayoutSections["js"] = "contest/js.tpl"
-
 }
+
 func (c *ContestController) ContestRank() {
 	cid, _ := c.GetInt(":cid")
 
@@ -230,45 +231,71 @@ func (c *ContestController) ContestRank() {
 
 	solution := models.Solution{Cid: cid}
 	solutions, _ := solution.GetRecent()
-	ss,userNum := solution.ContestUsers()
-	var id map[int]int
-	id = make(map[int]int,1001)
-	for i,e := range ss{
-		id[e.Uid] = i
-	}
-	type UserProblem struct {
-		IsAc     bool
-		AcTime   time.Time
-		Attempts int
-	}
-	type RankT struct {
-		AcNum int
-		UsedTime int
-	}
-	result := [1001][61]UserProblem{}
-	rank := [1001]RankT{}
+	users, _ := solution.ContestUsers()
 
-	for _, s := range solutions {
-		idx := id[s.Uid]
-		if s.Result == 1 {
-			result[idx][s.Pid].IsAc = true
-			result[idx][s.Pid].AcTime = s.DateCreated
-			rank[idx].AcNum += 1
-			usedTime := int(s.DateCreated.Unix()-contest.StartTime.Unix()) + result[idx][s.Pid].Attempts*20*60
-			rank[s.Uid].UsedTime = usedTime
-		} else {
-			result[idx][s.Pid].Attempts += 1
+	//fmt.Println(solutions)
+	//fmt.Println(users, userNum)
+
+	type UserList []*models.ContestUser
+	userList := UserList{}
+
+	//初始化用户
+	problems := strings.Split(contest.Problems, ",")
+	for _, user := range users {
+		contestUser := &models.ContestUser{
+			Uid:      user.Uid,
+			Nickname: user.User.Nickname,
+			Solved:   0,
+			UsedTime: 0,
+		}
+		for _, problem := range problems {
+			pid, _ := strconv.Atoi(problem)
+			contestProblem := models.ContestProblem{
+				Pid:        pid,
+				UsedTime:   0,
+				Attempt:    0,
+				FirstBlood: false,
+			}
+			contestUser.Problems = append(contestUser.Problems, contestProblem)
+		}
+		userList = append(userList, contestUser)
+	}
+
+	//处理用户排名逻辑
+	for _, solution := range solutions {
+
+		useTime := solution.DateCreated.Second() - contest.StartTime.Second()
+
+		for i, user := range userList {
+			if (solution.Uid == user.Uid) {
+				for j, problem := range user.Problems {
+					if (problem.Pid == solution.Pid) {
+						if (solution.Result == 3) {
+							problem.UsedTime = problem.Attempt*20 + useTime
+							user.Solved++
+						} else {
+							problem.Attempt++
+						}
+						user.Problems[j] = problem
+					}
+				}
+			}
+			userList[i] = user
 		}
 	}
-	cmp := func(i, j int) bool {
-		if rank[i].AcNum == rank[j].AcNum {
-			return rank[i].UsedTime < rank[j].UsedTime
+
+	sort.Slice(userList, func(i, j int) bool {
+		if (userList[i].Solved == userList[j].Solved) {
+			return userList[i].UsedTime < userList[j].UsedTime
 		}
-		return rank[i].AcNum < rank[j].AcNum
-	}
-	sort.Slice(rank[:userNum], cmp)
-	c.Data["rank"] = rank[:userNum]
-	c.Data["result"] = result[:userNum]
+		return userList[i].Solved < userList[j].Solved
+	})
+
+	//for _, user := range userList {
+	//	fmt.Println(user)
+	//}
+
+	c.Data["userlist"] = userList
 	c.Data["contest"] = contest
 	c.Data["title"] = "Rank"
 	c.Layout = "layout.tpl"

@@ -67,10 +67,10 @@ type Contest struct {
 }
 type Solution struct {
 	Sid             int       `orm:"pk"`
-	Pid             int       `orm:"index;default(0)"` //检索使用
+	Pid             int       `orm:"index;default(0)"`         //检索使用
 	Uid             int       `orm:"index;default(0)"json:"-"` //检索使用
 	Cid             int       `orm:"index;default(0)"json:"-"` //必须保留
-	Result          int       `orm:"index;default(0)"json:"-"`  //
+	Result          int       `orm:"index;default(0)"json:"-"` //
 	Length          int       `orm:"default(0)"json:"-"`
 	TakeTime        int       `orm:"default(0)"json:"-"`
 	TakeMemory      int       `orm:"default(0)"json:"-"`
@@ -80,6 +80,21 @@ type Solution struct {
 	User            *User     `orm:"rel(fk)"` //排名时需要用户名
 	//Contest         *Contest  `orm:"rel(fk)"`
 	Problem *Problem `orm:"rel(fk)"` //需要知道题目的时空限制
+}
+
+type ContestProblem struct {
+	Pid        int
+	UsedTime   int
+	Attempt    int
+	FirstBlood bool
+}
+
+type ContestUser struct {
+	Uid      int
+	Nickname string
+	Solved   int
+	UsedTime int
+	Problems []ContestProblem
 }
 type News struct {
 	Nid         int       `orm:"pk;auto"`

@@ -49,19 +49,19 @@
                 </tr>
                 </thead>
                 <tbody>
-                {{range $index,$r := .rank}}
+                {{range $index,$user := .userlist}}
                 <tr>
                     <input value="32356" name="hid_uid" type="hidden">
-                    <td>{{$index}}</td>
+                    <td>{{$index }}</td>
                     <td class="text-left nowrap-td">
-                        <a href="/User/info/uid/32356.html">
-                            <span class="inline-right-text">{{.}}</span>
+                        <a href="/User/info/uid/{{$user.Uid}}.html">
+                            <span class="inline-right-text">{{$user.Nickname}}</span>
                         </a>
                     </td>
                     <td>
-                        <a href="http://sdutacm.cn/onlinejudge2/index.php/Home/Contest/conteststatus/cid/2485/uid/32356.html">7</a>
+                        <a href="http://sdutacm.cn/onlinejudge2/index.php/Home/Contest/conteststatus/cid/2485/uid/32356.html">{{$user.Solved}}</a>
                     </td>
-                    <td>{{.UsedTime}}</td>
+                    <td>{{$user.UsedTime}}</td>
                     <td data-subm-total="0"><p class="detail-time"><br></p>
                         <p class="detail-rj-count"><br></p></td>
                     <td data-subm-total="0"><p class="detail-time"><br></p>
@@ -79,19 +79,14 @@
     </div>
 </div>
 
-<script>
-    cid = 2485;
-</script>
-
-<script src="Ranklist_files/jquery_002.js"></script>
-<script src="Ranklist_files/jquery.js"></script>
-<script src="/static/js/xlsx.js"></script>
-<script src="Ranklist_files/Blob.js"></script>
-<script src="Ranklist_files/FileSaver.js"></script>
-<script src="Ranklist_files/tableexport.js"></script>
-<script src="Ranklist_files/ranklist_redesign.js"></script>
-
-<script src="Ranklist_files/ranklist.html"></script>
+{{/*<script src="Ranklist_files/jquery_002.js"></script>*/}}
+{{/*<script src="Ranklist_files/jquery.js"></script>*/}}
+{{/*<script src="/static/js/xlsx.js"></script>*/}}
+{{/*<script src="Ranklist_files/Blob.js"></script>*/}}
+{{/*<script src="Ranklist_files/FileSaver.js"></script>*/}}
+{{/*<script src="Ranklist_files/tableexport.js"></script>*/}}
+{{/*<script src="Ranklist_files/ranklist_redesign.js"></script>*/}}
+{{/*<script src="Ranklist_files/ranklist.html"></script>*/}}
 
 <script>
     initContest();

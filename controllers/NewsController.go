@@ -16,7 +16,6 @@ func (c *NewsController) List(){
 	c.Data["title"] = "NewsList "
 	c.Layout = "layout.tpl"
 	c.TplName = "news/list.tpl"
-
 }
 
 func (c *NewsController)NewsById(){

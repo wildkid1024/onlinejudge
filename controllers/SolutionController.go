@@ -41,7 +41,6 @@ func (c *SolutionController) Submit() {
 	pid, _ := c.GetInt(":pid")
 	user := models.User{Uid: uid}
 	user.GetByUid()
-	//fmt.Println(user)
 	problem := models.Problem{Pid: pid}
 	if !problem.GetByPid() {
 		c.Abort("404")
@@ -68,15 +67,6 @@ func (c *SolutionController) Submit() {
 	c.Data["title"] = "Submit "
 	c.Layout = "layout.tpl"
 	c.TplName = "solution/submit.tpl"
-
-	/*
-	conn,err := net.Dial("tcp","")
-	defer conn.Close()
-	if nil != err{
-		return
-	}
-	conn.Write([]byte("aa"))
-	*/
 }
 func (c *SolutionController) ViewCode() {
 	sid,_ := c.GetInt(":sid")
@@ -84,9 +74,9 @@ func (c *SolutionController) ViewCode() {
 	if !solution.GetById(){
 		c.Abort("404")
 	}
-	fmt.Println(solution)
+	//fmt.Println(solution)
 	if uid := c.GetSession("id"); uid != solution.Uid {
-		fmt.Println(uid)
+		//fmt.Println(uid)
 		c.Abort("404")
 	}
 	c.Data["title"] = "ViewCode"

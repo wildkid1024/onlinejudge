@@ -20,8 +20,6 @@
             </tr>
             </thead>
             <tbody>
-            {{/*{% set see_result=judge.is_allowed_see_result(user) %}*/}}
-            {{/*{% set result=judge.get_result()%}*/}}
             <tr>
                 <td>{{.solution.Sid}}</td>
                 <td><a href="">{{.solution.Pid}}</a></td>
@@ -40,10 +38,8 @@
     <div class="am-u-sm-12">
         <pre><code class="C++">{{.solution.Code}}</code></pre>
     </div>
-{{/*{% if see_code and see_result%}*/}}
-{{/*{% if result["status"] == "Compile Error" and result["compiler_output"] %}*/}}
     <div class="am-u-sm-12">
-        <pre><code ></code></pre>
+        <pre><code></code></pre>
     </div>
 
 </div>
