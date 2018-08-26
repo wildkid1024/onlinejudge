@@ -1,15 +1,16 @@
 package models
 
 import (
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 	"time"
-	"github.com/astaxie/beego/orm"
 )
 
 type User struct {
-	Uid           int       `orm:"pk;auto"`
-	Username      string    `orm:"unique"`
-	Password      string    `json:"-"`
+	Uid           int    `orm:"pk;auto"`
+	Username      string `orm:"unique"`
+	Password      string `json:"-"`
 	Nickname      string
 	School        string
 	College       string
@@ -31,7 +32,7 @@ type User struct {
 }
 
 type Problem struct {
-	Pid            int       `orm:"pk;auto;unique"`
+	Pid            int `orm:"pk;auto;unique"`
 	Uid            int
 	Title          string
 	TimeLimit      int
@@ -43,8 +44,8 @@ type Problem struct {
 	SampleOutput   string
 	Hint           string
 	Source         string
-	IsDisplay      bool      `orm:"default(True);index"`
-	IsSpecialJudge bool      `orm:"default(False);index"`
+	IsDisplay      bool `orm:"default(True);index"`
+	IsSpecialJudge bool `orm:"default(False);index"`
 	IsVjudge       bool
 	DateCreated    time.Time `orm:"auto_now_add;type(datetime)"`
 	DateUpdate     time.Time `orm:"auto_now";type(datetime):`
@@ -66,15 +67,15 @@ type Contest struct {
 	Type        int
 }
 type Solution struct {
-	Sid             int       `orm:"pk"`
-	Pid             int       `orm:"index;default(0)"`         //检索使用
-	Uid             int       `orm:"index;default(0)"json:"-"` //检索使用
-	Cid             int       `orm:"index;default(0)"json:"-"` //必须保留
-	Result          int       `orm:"index;default(0)"json:"-"` //
-	Length          int       `orm:"default(0)"json:"-"`
-	TakeTime        int       `orm:"default(0)"json:"-"`
-	TakeMemory      int       `orm:"default(0)"json:"-"`
-	ProgramLanguage string    `orm:"index"`
+	Sid             int    `orm:"pk"`
+	Pid             int    `orm:"index;default(0)"`         //检索使用
+	Uid             int    `orm:"index;default(0)"json:"-"` //检索使用
+	Cid             int    `orm:"index;default(0)"json:"-"` //必须保留
+	Result          int    `orm:"index;default(0)"json:"-"` //
+	Length          int    `orm:"default(0)"json:"-"`
+	TakeTime        int    `orm:"default(0)"json:"-"`
+	TakeMemory      int    `orm:"default(0)"json:"-"`
+	ProgramLanguage string `orm:"index"`
 	Code            string
 	DateCreated     time.Time `orm:"auto_now;index"json:"-"`
 	User            *User     `orm:"rel(fk)"` //排名时需要用户名
@@ -97,7 +98,7 @@ type ContestUser struct {
 	Problems []ContestProblem
 }
 type News struct {
-	Nid         int       `orm:"pk;auto"`
+	Nid         int `orm:"pk;auto"`
 	Uid         int
 	Title       string
 	Content     string
@@ -105,13 +106,19 @@ type News struct {
 }
 
 func init() {
+	//driverName := beego.AppConfig.String("db::driverName")
+	location := beego.AppConfig.String("db::location")
+	username := beego.AppConfig.String("db::username")
+	password := beego.AppConfig.String("db::password")
+	charset := beego.AppConfig.String("db::charset")
+	loc := beego.AppConfig.String("db::loc")
+	dbName := beego.AppConfig.String("db::dbname")
 	orm.RegisterDriver("mysql", orm.DRMySQL)
-	orm.RegisterDataBase("default", "mysql", "root:root@/oj?loc=Local")
+	orm.RegisterDataBase("default", "mysql", username+":"+password+"@tcp("+location+")/"+dbName+"?loc="+loc+"&charset="+charset)
 	orm.RegisterModel(new(User))
 	orm.RegisterModel(new(Problem))
 	orm.RegisterModel(new(Solution))
 	orm.RegisterModel(new(News))
 	orm.RegisterModel(new(Contest))
 	orm.RunSyncdb("default", false, true)
-
 }
