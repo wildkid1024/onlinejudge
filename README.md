@@ -9,6 +9,12 @@
 
 在后台设计上，借鉴参考了[SyzOj](https://github.com/Zhengzhou-11-Highschool/syzoj)以及[Hustoj](https://github.com/freefcw/hustoj)，他们解决问题的思路给了我很多灵感，向开源作者致敬。
 
+## 安装依赖
+[beego](https://beego.me/)  ```go get github.com/astaxie/beego```
+
+[go-sql-driver](https://github.com/go-sql-driver/mysql)  ```github.com/go-sql-driver/mysql```
+
+[crypto/bcrypt](https://github.com/golang/crypto) ```go get golang.org/x/crypto/bcrypt```
 
 ## 如何部署
 
@@ -29,8 +35,8 @@ ps：请保证你的机器上已经安装了golang环境和mysql数据库。
 
 以下列表将展示我将要完成的功能：
 
-- [ ] 提交判题结果到后台
-- [ ] 集合配置到配置文件中
+- [x] 提交判题结果到后台
+- [x] 集合配置到配置文件中
 - [ ] 相关的数据API接口
 - [ ] 当注册时发送注册邮件
 - [ ] 注册和登录过滤

@@ -27,20 +27,20 @@ func (this *BaseController) Prepare() {
 		this.Data["nickname"] = user.Nickname
 		this.Data["logged"] = true
 	}
-	now :=  time.Now().Unix()
+	now := time.Now().Unix()
 	this.Data["now"] = now
 }
 
-func (this *BaseController) loggedInCheck() bool{
+func (this *BaseController) loggedInCheck() bool {
 	if this.GetSession("id") == nil {
 		this.Redirect("/user/login", 302)
 		return false
 	}
 	return true
 }
-func (this *BaseController) adminCheck() bool{
+func (this *BaseController) adminCheck() bool {
 	id := this.GetSession("id")
-	user := models.User{Uid:id.(int)}
+	user := models.User{Uid: id.(int)}
 	user.GetByUid()
 	if user.IsAdmin != 1 {
 		this.Redirect("/", 302)

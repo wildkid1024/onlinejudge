@@ -28,8 +28,6 @@
                 <td><a href="/problem/{{$solution.Pid}}">{{$solution.Pid}}</a></td>
             {{if (eq $solution.Result 10)}}
                 <td class="bold pe-text">Judgeing</td>
-            {{else if (eq $solution.Result 9)}}
-                <td class="bold pe-text">Submited</td>
             {{else if (eq $solution.Result 1)}}
                 <td class="bold accept-text">Accepted</td>
             {{else if (eq $solution.Result 2)}}
@@ -46,6 +44,8 @@
                 <td class="bold wrong-text">Runtime Error</td>
             {{else if (eq $solution.Result 8)}}
                 <td class="bold wrong-text">Compile Error</td>
+            {{else }}
+                <td class="bold pe-text">Submited</td>
             {{end}}
                 <td>{{$solution.TakeTime}}</td>
                 <td>{{$solution.TakeMemory}}</td>

@@ -2,7 +2,6 @@ package models
 
 import (
 	"github.com/astaxie/beego/orm"
-	"fmt"
 )
 
 func (solution *Solution) GetRecent() ([]Solution, int64) {
@@ -41,7 +40,7 @@ func (solution *Solution) UserGet() ([]Solution, int64) {
 	}
 	return nil, 0
 }
-func (solution *Solution) GetFirst() (bool) {
+func (solution *Solution) GetFirst() bool {
 	o := orm.NewOrm()
 	o.Using("default")
 	var solutions []Solution
@@ -53,7 +52,7 @@ func (solution *Solution) GetFirst() (bool) {
 	}
 	return false
 }
-func (solution *Solution) GetById() (bool) {
+func (solution *Solution) GetById() bool {
 	o := orm.NewOrm()
 	err := o.Read(solution)
 	if err == nil {
@@ -77,7 +76,6 @@ func (solution *Solution) Update(para ...string) (int64, bool) {
 	o := orm.NewOrm()
 	sid, err := o.Update(solution, para...)
 	if err != nil {
-		fmt.Println(err)
 		return sid, false
 	}
 	return sid, true
@@ -88,7 +86,7 @@ func (solution *Solution) ContestUsers() ([]Solution, int64) {
 	var solutions []Solution
 	qs := o.QueryTable("solution")
 	qs = qs.Filter("Cid", solution.Cid)
-	count, err := qs.GroupBy("Uid").RelatedSel().All(&solutions,"Uid","User")
+	count, err := qs.GroupBy("Uid").RelatedSel().All(&solutions, "Uid", "User")
 	if err == nil {
 		return solutions, count
 	}

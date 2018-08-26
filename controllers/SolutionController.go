@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"onlinejudge/models"
+	"encoding/json"
 	"github.com/astaxie/beego"
-	"fmt"
+	"onlinejudge/models"
 )
 
 type SolutionController struct {
@@ -19,7 +19,7 @@ func (c *SolutionController) List() {
 	Solution := models.Solution{Uid: uid, Pid: pid, Result: result, User: &models.User{Nickname: nickname}}
 	Solutions, _ := Solution.GetRecent()
 
-	pageSize := 50;
+	pageSize := 50
 	page, err := c.GetInt("p")
 	totals := len(Solutions)
 	if nil != err {
@@ -28,7 +28,7 @@ func (c *SolutionController) List() {
 	c.Data["Page"] = models.PageUtil(totals, page, pageSize, models.ToSlice(Solutions))
 	c.Data["solutions"] = Solutions
 	c.Data["title"] = "Status "
-	c.Layout = "layout.tpl";
+	c.Layout = "layout.tpl"
 	c.TplName = "solution/solutions.tpl"
 	c.LayoutSections = make(map[string]string)
 }
@@ -56,7 +56,7 @@ func (c *SolutionController) Submit() {
 			User:            &user,
 			Problem:         &problem,
 		}
-		_, st := solution.Create();
+		_, st := solution.Create()
 		if st {
 			c.Redirect("/status", 302)
 			return
@@ -69,9 +69,9 @@ func (c *SolutionController) Submit() {
 	c.TplName = "solution/submit.tpl"
 }
 func (c *SolutionController) ViewCode() {
-	sid,_ := c.GetInt(":sid")
-	solution := models.Solution{Sid:sid}
-	if !solution.GetById(){
+	sid, _ := c.GetInt(":sid")
+	solution := models.Solution{Sid: sid}
+	if !solution.GetById() {
 		c.Abort("404")
 	}
 	//fmt.Println(solution)
@@ -94,36 +94,63 @@ func (c *SolutionController) APIGet() {
 	}
 	solution.GetFirst()
 	json := models.APISolution{
-		Sid:solution.Sid,
-		Pid:solution.Pid,
-		ProgramLanguage:solution.ProgramLanguage,
-		Code:solution.Code,
+		Sid:             solution.Sid,
+		Pid:             solution.Pid,
+		ProgramLanguage: solution.ProgramLanguage,
+		Code:            solution.Code,
 	}
-	if solution.Problem != nil{
+	if solution.Problem != nil {
 		json.MemoryLimit = solution.Problem.MemoryLimit
 		json.TimeLimit = solution.Problem.TimeLimit
 	}
-	c.Data["json"] = json
-	s := models.Solution{Sid:solution.Sid}
-	s.Result = 10;
+
+	s := models.Solution{Sid: solution.Sid}
+	s.Result = 10
 	s.Update("Result")
+
+	c.Data["json"] = json
 	c.Data["title"] = "API"
 	c.ServeJSON()
 }
+
+/**
+接收判题机的结果
+格式:
+{
+  "sid":12,
+  "pid":1,
+  "result":1,
+  "usedtime":100,
+  "usedmemory":1569
+}
+*/
 func (c *SolutionController) APIPost() {
-	//solution := models.Solution{}
+	solution := &models.APISolution{}
 
 	Token := c.GetString("token")
 	if Token != beego.AppConfig.String("token") {
 		c.Abort("404")
 	}
 
-	fmt.Println(c.Ctx.Input.RequestBody)
-	//json.Unmarshal(C.Ctx.Input.RequestBody, &solution)
-	//id, ok := solution.Update()
-	//if !ok {
-	//	c.Data["json"] = nil
-	//}
-	//c.Data["json"] = "{\"ObjectId\":\"" + strconv.Itoa(int(id)) + "\"}"
-	//c.ServeJSON()
+	jsonStr := c.GetString("data")
+	if err := json.Unmarshal([]byte(jsonStr), &solution); err != nil {
+		c.Abort("404")
+	}
+	sol := &models.Solution{Sid: solution.Sid}
+	sol.GetById()
+	sol.Result = solution.Result
+	sol.TakeMemory = solution.UsedMemory
+	sol.TakeTime = solution.UsedTime
+
+	data := ""
+	if _, ok := sol.Update("Result", "TakeTime", "TakeMemory"); ok == true {
+		data = `{"status":0,"msg":"","data":""}`
+	} else {
+		data = `{"status":1,"msg":"发生错误","data":""}`
+	}
+
+	c.Data["title"] = "API"
+	c.Ctx.Output.ContentType("json")
+	c.Ctx.Output.Body([]byte(data))
+
 }
